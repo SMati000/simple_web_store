@@ -35,7 +35,7 @@ public class SecurityConfig {
 			.oauth2ResourceServer(oauth2 ->
 				oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(authenticationConverter())))
 			.authorizeHttpRequests(authorize -> authorize
-					.requestMatchers("/ping", "/products/**").permitAll()
+					.requestMatchers("/ping", "/swagger.yaml", "/swagger-ui/**", "/api-docs/swagger-config", "/products/**").permitAll()
 					.anyRequest().authenticated())
 			.exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
 					httpSecurityExceptionHandlingConfigurer.accessDeniedHandler(new CustomAccessDeniedHandler()));

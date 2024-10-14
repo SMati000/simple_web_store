@@ -1,0 +1,413 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- url: http://localhost:8083
+paths:
+  /products:
+    get:
+      tags:
+      - product-controller
+      operationId: getProducts
+      parameters:
+      - name: name
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: category
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - TORTAS
+          - POSTRES
+          - SALADOS
+          - DULCES
+      responses:
+        "200":
+          description: OK
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+    post:
+      tags:
+      - product-controller
+      operationId: createProducts
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Will be authorized if has 'pc_admin' role
+          schema:
+            type: string
+            example: Bearer {jwt_access_token}
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/ProductReqDto"
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+        "400":
+          description: Bad request
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+  /products/{pid}:
+    get:
+      tags:
+      - product-controller
+      operationId: getProduct
+      parameters:
+      - name: pid
+        in: path
+        required: true
+        description: Product id
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/Product"
+        "404":
+          description: Not Found
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      tags:
+      - product-controller
+      operationId: deleteProduct
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        description: Will be authorized if has 'pc_admin' role
+        schema:
+          type: string
+          example: Bearer {jwt_access_token}
+      - name: pid
+        in: path
+        required: true
+        description: Product id
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not Found
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      tags:
+      - product-controller
+      operationId: updateProduct
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        description: Will be authorized if has 'pc_admin' role
+        schema:
+          type: string
+          example: Bearer {jwt_access_token}
+      - name: pid
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductReqDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/Product"
+        "400":
+          description: Bad request
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not Found
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ErrorResponse"
+  /cart/{uid}:
+    get:
+      tags:
+      - cart-controller
+      operationId: getCart
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        description: Will be authorized if has 'pc_customer' role, and requested cart belongs to the authenticated user
+        schema:
+          type: string
+          example: Bearer {jwt_access_token}
+      - name: uid
+        in: path
+        required: true
+        description: user's email address
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/Cart"
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not Found
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      tags:
+      - cart-controller
+      operationId: emptyCart
+      description: Will clear the cart of said user
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        description: Will be authorized if has 'pc_customer' role, and requested cart belongs to the authenticated user
+        schema:
+          type: string
+          example: Bearer {jwt_access_token}
+      - name: uid
+        in: path
+        required: true
+        description: user's email address
+        schema:
+          type: string
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+    patch:
+      tags:
+      - cart-controller
+      operationId: updateCart
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        description: Will be authorized if has 'pc_customer' role, and requested cart belongs to the authenticated user
+        schema:
+          type: string
+          example: Bearer {jwt_access_token}
+      - name: uid
+        in: path
+        required: true
+        description: user's email address
+        schema:
+          type: string
+      - name: relative
+        in: query
+        required: false
+        description: If set to 'true', the amount sent will be added to the current amount for that product,
+          if such exists in the cart. If not specified, the existent amount in the cart, if any, will be replaced.
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/OrderByProductReqDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/Cart"
+        "400":
+          description: Bad request
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+  /ping:
+    get:
+      tags:
+      - base-controller
+      operationId: ping_1
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "200":
+          description: OK
+          content:
+            'application/json':
+              schema:
+                type: string
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+    ProductReqDto:
+      type: object
+      properties:
+        name:
+          pattern: "(?U)[\\w ñ]+[.\\w ñ]*"
+          type: string
+        category:
+          type: string
+          enum:
+          - TORTAS
+          - POSTRES
+          - SALADOS
+          - DULCES
+        stock:
+          type: integer
+          format: int32
+        price:
+          type: number
+          format: double
+        rating:
+          type: integer
+          format: int32
+        image:
+          type: string
+        description:
+          type: string
+        minPrevReqDays:
+          type: integer
+          format: int32
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        category:
+          type: string
+          enum:
+          - TORTAS
+          - POSTRES
+          - SALADOS
+          - DULCES
+        stock:
+          type: integer
+          format: int32
+        price:
+          type: number
+          format: double
+        rating:
+          type: integer
+          format: int32
+        image:
+          type: string
+        description:
+          type: string
+        minPrevReqDays:
+          type: integer
+          format: int32
+    OrderByProductReqDto:
+      required:
+      - productId
+      type: object
+      properties:
+        productId:
+          type: integer
+          format: int32
+        amount:
+          type: integer
+          format: int32
+    Cart:
+      type: object
+      properties:
+        user:
+          type: string
+        productOrders:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderByProduct"
+    OrderByProduct:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        product:
+          $ref: "#/components/schemas/Product"
+        amount:
+          type: integer
+          format: int32

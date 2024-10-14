@@ -21,7 +21,7 @@ Authorization is based on two simple roles: `pc_admin`, `pc_customer`. The first
 - URLs:
     - Web Store: http://localhost:8081/
         - You can login with the default admin user with `username: porkys, password: admin`.
-        - You can register new users as you please. This will have customer role by default. 
+        - You can register new users as you please. This will have customer role by default.
     - Keycloak: http://keycloak:8080/ 
         - You can find user and password in `keycloak/Dockerfile`
         - Realm is `porky_cakes_realm`
@@ -30,6 +30,8 @@ Authorization is based on two simple roles: `pc_admin`, `pc_customer`. The first
         - You can find the password in the `compose.yaml` (username: `root`)
         - The database name is `porkycakes`
         - In this repo, DB is already initialized with some minimum data, but there is also a script to do that `/db/populate_db.sql` which you could run from PhpMyAdmin. Take into account the database will be initialized by the api when in its first run, then you can use the script.
+    - API:
+        - You can find the API documentation in a swagger: http://localhost:8083/swagger-ui/index.html#/
 
 ## Limitations
 - When uploading a product, the image has to be one of the available in `porkycakes-react/public/assets`, otherwise it won't work.

@@ -1,0 +1,72 @@
+# must add the following line to system hosts for this to work properly
+# 127.0.0.1       keycloak
+services:
+  mariadb:
+    image: mariadb:10.4
+    ports:
+      - "3306:3306"
+    environment:
+      MARIADB_DATABASE: porkycakes
+      MARIADB_ROOT_PASSWORD: t8LzuAeXsR
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$${MARIADB_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
+    volumes:
+      - ./db/base_db_volume:/var/lib/mysql
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: mariadb
+      MYSQL_ROOT_PASSWORD: t8LzuAeXsR
+    ports:
+      - "8082:80"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0.5
+    ports:
+      - "8080:8080"
+    environment:
+      - KC_HOSTNAME=keycloak
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    healthcheck:
+      test: ["CMD-SHELL", '[ -f /tmp/HealthCheck.java ] || echo "public class HealthCheck { public static void main(String[] args) throws java.lang.Throwable { System.exit(java.net.HttpURLConnection.HTTP_OK == ((java.net.HttpURLConnection)new java.net.URL(args[0]).openConnection()).getResponseCode() ? 0 : 1); } }" > /tmp/HealthCheck.java && java /tmp/HealthCheck.java http://localhost:8080']
+      interval: 10s
+      timeout: 3s
+      retries: 6
+      start_period: 15s
+    volumes:
+      - ./keycloak/base_keycloak_volume:/opt/keycloak
+    entrypoint: ["/opt/keycloak/bin/kc.sh", "start-dev"]
+  api:
+    build: ./porkycakes
+    ports:
+      - "8083:8083"
+    environment:
+      - spring.security.oauth2.resourceserver.jwt.issuer-uri=http://keycloak:8080/realms/porky_cakes_realm
+      - spring.datasource.url=jdbc:mysql://mariadb:3306/porkycakes?useSSL=false&serverTimezone=UTC
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8083/ping"]
+      interval: 10s
+      timeout: 5s
+      start_period: 20s
+      retries: 6
+    depends_on:
+      keycloak:
+        condition: service_healthy
+      mariadb:
+        condition: service_healthy
+  front:
+    build: ./porkycakes-react
+    ports:
+      - "8081:3000"
+    depends_on:
+      keycloak:
+        condition: service_healthy
+      api:
+        condition: service_healthy

@@ -1,0 +1,10 @@
+.navbar-bg {
+  background-color: #e2a9c4;
+  color: rgb(240, 248, 255);
+}
+
+.product-title-wrap {
+  @media(min-width: 1024px) {
+      text-wrap: nowrap;
+  }
+}

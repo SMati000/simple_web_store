@@ -2,11 +2,19 @@ import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { setUser, clearUser } from '../redux/userSlice';
-import { decodeToken } from '../utils';
+import { decodeToken, generateNonce, NavLink, handleKeycloakLogout, validToken } from '../utils';
 
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  var nonce = sessionStorage.getItem('nonce');
+  if(nonce == null) {
+    nonce = generateNonce();
+    sessionStorage.setItem('nonce', nonce);
+  }
+
+  const keycloakLoginUrl = `${process.env.REACT_APP_KEYCLOAK_ISSUER}/protocol/openid-connect/auth?client_id=${process.env.REACT_APP_KEYCLOAK_CLIENT_ID}&response_type=id_token%20token&redirect_uri=${process.env.REACT_APP_KEYCLOAK_LOGIN_REDIRECT_URL}&nonce=${nonce}`;
 
   useEffect(() => {
     const hash = window.location.hash;
@@ -14,22 +22,24 @@ const Login = () => {
     
     const accessToken = params.get('access_token');
     const idToken = params.get('id_token');
+    const recievedNonce = decodeToken(idToken)?.nonce;
+
+    if(recievedNonce !== undefined && sessionStorage.getItem('nonce') !== recievedNonce) {
+      alert('Error on login');
+      sessionStorage.removeItem('nonce');
+
+      handleKeycloakLogout(idToken);
+      dispatch(clearUser());
+      navigate('/');
+
+      return;
+    }
 
     if (accessToken) {
       const decoded = decodeToken(accessToken);
       
-      // Basic validations on the JWT
-      const currentTime = Math.floor(Date.now() / 1000);
-      if (decoded.exp < currentTime) {
-        alert('Token has expired');
-        dispatch(clearUser());
-        navigate('/');
-        return;
-      }
-
-      const expectedIssuer = process.env.REACT_APP_KEYCLOAK_ISSUER;
-      if (decoded.iss !== expectedIssuer) {
-        alert('Invalid token issuer');
+      if (!validToken(decoded)) {
+        handleKeycloakLogout(idToken);
         dispatch(clearUser());
         navigate('/');
         return;
@@ -45,7 +55,13 @@ const Login = () => {
     }
   }, [dispatch, navigate]);
 
-  return <div>Loading...</div>; // Show a loading state while processing
+  return (
+    <div className="d-flex">
+      <NavLink className="nav-link" to={keycloakLoginUrl}>
+        Login
+      </NavLink>
+    </div>
+  );
 };
 
 export default Login;

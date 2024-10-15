@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 import { useDispatch } from 'react-redux';
-import { setUser } from './redux/userSlice';
+import { setUser, clearUser } from './redux/userSlice';
 
 import { Spinner } from "react-bootstrap";
 
@@ -12,7 +12,7 @@ import ProductPage from './components/ProductPage';
 import CartPage from './components/CartPage';
 import UploadUpdateProduct from './components/UploadUpdateProduct';
 
-import { decodeToken } from './utils';
+import { decodeToken, validToken, handleKeycloakLogout } from './utils';
 
 function App() {
   const dispatch = useDispatch();
@@ -24,11 +24,17 @@ function App() {
 
     if (accessToken) {
       const decoded = decodeToken(accessToken);
-      const name = decoded.name;
-      const email = decoded.email;
-      const pcRoles = decoded.pc_roles;
-
-      dispatch(setUser({ name, email, pcRoles, accessToken, idToken }));
+      
+      if (!validToken(decoded)) {
+        handleKeycloakLogout(idToken);
+        dispatch(clearUser());
+      } else {
+        const name = decoded.name;
+        const email = decoded.email;
+        const pcRoles = decoded.pc_roles;
+  
+        dispatch(setUser({ name, email, pcRoles, accessToken, idToken }));
+      }
     }
 
     setLoading(false);

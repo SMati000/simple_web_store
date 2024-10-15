@@ -1,8 +1,9 @@
-import { Button, Container, Badge } from "react-bootstrap";
+import { Button, Container } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import logo from "../assets/logo-no-background.png";
+import Login from "./Login";
 import Logout from "./Logout";
 import { NavLink } from '../utils';
 import HasAccess from "./HasAccess";
@@ -17,25 +18,10 @@ const NavItem = styled.li`
   margin-left: 15px;
 `;
 
-function generateNonce(length = 16) {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let nonce = '';
-  for (let i = 0; i < length; i++) {
-    nonce += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return nonce;
-}
-
 function Header() {
-  // Get current loaction to determine active nav link
   const location = useLocation();
 
-  // Retrieve cart items from Redux store and calculcate item count
-  const cartItems = useSelector((state) => state.cart.items); // Get cart items from Redux store
-  const itemCount = cartItems.length; // Calculate the number of items in the cart
   const pcRoles = useSelector((state) => state.user.pcRoles);
-
-  const keycloakLoginUrl = `${process.env.REACT_APP_KEYCLOAK_ISSUER}/protocol/openid-connect/auth?client_id=${process.env.REACT_APP_KEYCLOAK_CLIENT_ID}&response_type=id_token%20token&redirect_uri=${process.env.REACT_APP_KEYCLOAK_LOGIN_REDIRECT_URL}&nonce=${generateNonce()}`;
 
   return (
     <header className="header">
@@ -59,11 +45,7 @@ function Header() {
                   <Logout />
                 </div>
               ) : (
-                <div className="d-flex">
-                  <NavLink className="nav-link" to={keycloakLoginUrl}>
-                    Login
-                  </NavLink>
-                </div>
+                <Login/>
               )}
             </div>
             <ul className="navbar-nav mx-auto mb-2 mb-lg-0">
@@ -86,12 +68,7 @@ function Header() {
                     }`}
                     to="/cart"
                   >
-                    Carrito{" "}
-                    {itemCount > 0 && (
-                      <Badge pill bg="danger">
-                        {itemCount}
-                      </Badge>
-                    )}
+                    Carrito
                   </NavLink>
                 </NavItem>
               </HasAccess>

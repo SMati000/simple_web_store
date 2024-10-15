@@ -8,11 +8,9 @@ import org.springframework.security.oauth2.jwt.Jwt;
 public class TokenValidator implements OAuth2TokenValidator<Jwt> {
 
 	private final String audience;
-	private final String namespace;
 
-	TokenValidator(String audience, String namespace) {
+	TokenValidator(String audience) {
 		this.audience = audience;
-		this.namespace = namespace;
 	}
 
 	@Override

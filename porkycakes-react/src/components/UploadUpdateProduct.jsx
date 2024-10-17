@@ -80,7 +80,6 @@ const UploadUpdateProduct = () => {
         const params = new URLSearchParams(uri);
         const id = params.get('product_id');
         setProductId(id);
-        console.log(productId);
 
         handleUpdate();
     }, [productId]);

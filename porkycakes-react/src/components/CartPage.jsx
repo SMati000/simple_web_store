@@ -16,23 +16,26 @@ const getCart = async (email, token) => {
 
   if (!response.ok) {
     if(response.status === 404) {
-      return {'user': email, 'productOrders': []};
+      console.log('Carrito no encontrado');
+    } else if(response.status === 401 || response.status === 403) {
+      console.log('Permiso denegado');
+    } else {
+      console.log('Ha ocurrido un error');
     }
 
-    throw new Error('Ha ocurrido un error');
+    return {};
   }
 
   return response.json();
 };
 
 const patchCart = async (token, email, orders) => {
-  console.log(orders);
-  const requestBody = orders.productOrders.map(order => ({
+  const requestBody = orders.productOrders?.map(order => ({
     productId: order.product.id,
     amount: order.amount,
   }));
 
-  if(requestBody.length === 0) {
+  if(requestBody === undefined || requestBody.length === 0) {
     return;
   }
 
@@ -48,7 +51,8 @@ const patchCart = async (token, email, orders) => {
   );
   
   if (response.status < 200 || response.status >= 300) {
-      throw new Error('Ha ocurrido un error');
+    console.log('Ha ocurrido un error');
+    return {};
   }
 
   return response.json();
@@ -66,7 +70,7 @@ const emptyCart = async (token, email) => {
   );
   
   if (response.status < 200 || response.status >= 300) {
-      throw new Error('Ha ocurrido un error');
+      console.log('Ha ocurrido un error');
   }
 };
 
@@ -153,7 +157,7 @@ const CartPage = () => {
 
         <div className="card p-4">
           <h2 className="mx-auto">Tu Carrito</h2>
-          {cart.productOrders.length > 0 ? (
+          {cart.productOrders?.length > 0 ? (
             cart.productOrders.filter(o => o.amount !== 0).map((item) => (
               <Row key={item.id} id={item.id} className="align-items-center mb-3 p-2 border-bottom">
                 <Col className="d-flex align-items-center">
@@ -196,7 +200,7 @@ const CartPage = () => {
           )}
 
           <div className='text-center'>
-            <h3 className="text-center mt-4">Total: ${cart.productOrders.reduce((sum, item) => sum + item.product.price*item.amount, 0)}</h3>
+            <h3 className="text-center mt-4">Total: ${cart.productOrders?.reduce((sum, item) => sum + item.product.price*item.amount, 0)}</h3>
             <i>No incluye el envío.</i>
           </div>
         </div>

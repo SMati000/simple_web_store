@@ -1,5 +1,5 @@
-# Simple Web Store
-[This repository](https://github.com/SMati000/simple_web_store) contains the four components of the Web Store:
+# Simple Web Store <!-- https://github.com/SMati000/simple_web_store -->
+This repository contains the four components of the Web Store:
 
 - The API, made in Java with Spring Boot
 - The Front, made with ReactJs (Started off from [here](https://github.com/Kurtney21/hdev-web-store). You can see what the UI looks like there too)

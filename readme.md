@@ -6,7 +6,7 @@ This repository contains the four components of the Web Store:
 - The Identity Provider, using Keycloak
 - The database (MySQL 10.4.28-MariaDB) and PhpMyAdmin
 
-This Simple Web Store is dockerized with Docker Compose.
+This Simple Web Store is dockerized with Docker Compose. See implemented use cases [here](./use_cases.jpg)
 
 ## How to start locally
 - Add this line to your machine `hosts` file

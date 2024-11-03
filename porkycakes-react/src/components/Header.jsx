@@ -7,6 +7,8 @@ import Login from "./Login";
 import Logout from "./Logout";
 import { NavLink } from '../utils';
 import HasAccess from "./HasAccess";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHomeAlt, faCartShopping, faUpload } from '@fortawesome/free-solid-svg-icons';
 
 // Styled component for logo
 const Logo = styled.img`
@@ -57,7 +59,7 @@ function Header() {
                   aria-current="page"
                   to="/"
                 >
-                  Home
+                  <FontAwesomeIcon icon={faHomeAlt} size="lg" title='Home' />
                 </NavLink>
               </NavItem>
               <HasAccess allowedRoles={['pc_customer']} visible={false}>
@@ -68,7 +70,7 @@ function Header() {
                     }`}
                     to="/cart"
                   >
-                    Carrito
+                    <FontAwesomeIcon icon={faCartShopping} size="lg" title='Carrito' />
                   </NavLink>
                 </NavItem>
               </HasAccess>
@@ -80,7 +82,7 @@ function Header() {
                     }`}
                     to="/upload"
                   >
-                    Cargar
+                    <FontAwesomeIcon icon={faUpload} size="lg" title='Cargar' />
                   </NavLink>
                 </NavItem>
               </HasAccess>

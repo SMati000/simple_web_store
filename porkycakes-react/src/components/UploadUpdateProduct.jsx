@@ -134,13 +134,15 @@ const UploadUpdateProduct = () => {
         <HasAccess allowedRoles={['pc_admin']} visible={true}>
             <Container>
             <br/>
+            <h1>Cargar Producto</h1>
+            <hr/><br/>
 
             {error && <Alert variant="danger">{error}</Alert>}
             {success && <Alert variant="success">Form submitted successfully!</Alert>}
 
             <Form onSubmit={handleSubmit}>
                 <Form.Group controlId="formName">
-                    <Form.Label>Nombre</Form.Label>
+                    <Form.Label>Nombre del Producto</Form.Label>
                     <Form.Control
                     type="text"
                     placeholder="Torta con Almendras"
@@ -258,10 +260,12 @@ const UploadUpdateProduct = () => {
                     </Col>
                 </Row>
                 <br/>
-        
-                <Button variant="primary" type="submit">
-                    Enviar
-                </Button>
+                <hr/>
+                <div className="d-flex justify-content-end">
+                    <Button variant="primary" type="submit">
+                        Cargar
+                    </Button>
+                </div>
             </Form>
         </Container>
       </HasAccess>

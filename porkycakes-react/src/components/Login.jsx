@@ -3,6 +3,8 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { setUser, clearUser } from '../redux/userSlice';
 import { decodeToken, generateNonce, NavLink, handleKeycloakLogout, validToken } from '../utils';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSignInAlt } from '@fortawesome/free-solid-svg-icons';
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -58,7 +60,7 @@ const Login = () => {
   return (
     <div className="d-flex">
       <NavLink className="nav-link" to={keycloakLoginUrl}>
-        Login
+        <FontAwesomeIcon icon={faSignInAlt} size="lg" title='Login' />
       </NavLink>
     </div>
   );

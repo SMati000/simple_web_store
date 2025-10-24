@@ -1,5 +1,3 @@
-# must add the following line to system hosts for this to work properly
-# 127.0.0.1       keycloak
 services:
   mariadb:
     image: mariadb:10.4
@@ -31,7 +29,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - KC_HOSTNAME=keycloak
+      - KC_HOSTNAME=${HOST_IP}
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
     healthcheck:
@@ -48,7 +46,7 @@ services:
     ports:
       - "8083:8083"
     environment:
-      - spring.security.oauth2.resourceserver.jwt.issuer-uri=http://keycloak:8080/realms/porky_cakes_realm
+      - spring.security.oauth2.resourceserver.jwt.issuer-uri=http://${HOST_IP}:8080/realms/porky_cakes_realm
       - spring.datasource.url=jdbc:mysql://mariadb:3306/porkycakes?useSSL=false&serverTimezone=UTC
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:8083/ping"]
@@ -65,6 +63,8 @@ services:
     build: ./porkycakes-react
     ports:
       - "8081:3000"
+    environment:
+      - REACT_APP_KEYCLOAK_ISSUER=http://${HOST_IP}:8080/realms/porky_cakes_realm
     depends_on:
       keycloak:
         condition: service_healthy

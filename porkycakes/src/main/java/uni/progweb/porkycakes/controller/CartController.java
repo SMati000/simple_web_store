@@ -17,11 +17,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import uni.progweb.porkycakes.model.Cart;
+import uni.progweb.porkycakes.model.NotificationToken;
 import uni.progweb.porkycakes.model.OrderByProduct;
 import uni.progweb.porkycakes.model.mapper.OrderByProductMapper;
 import uni.progweb.porkycakes.model.request.OrderByProductReqDto;
 import uni.progweb.porkycakes.repository.CartRepo;
+import uni.progweb.porkycakes.repository.NotificationRepo;
 import uni.progweb.porkycakes.repository.OrderByProductRepo;
+import uni.progweb.porkycakes.utils.ExpoNotificationsApi;
 import uni.progweb.porkycakes.utils.exceptions.ErrorCodes;
 import uni.progweb.porkycakes.utils.exceptions.PorkyException;
 import java.util.ArrayList;
@@ -34,6 +37,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/cart/{uid}")
 public class CartController extends BaseController {
 	@Autowired CartRepo cartRepo;
+	@Autowired NotificationRepo notificationRepo;
+	@Autowired ExpoNotificationsApi expoNotificationsApi;
 	@Autowired OrderByProductRepo orderByProductRepo;
 	@Autowired OrderByProductMapper orderByProductMapper;
 
@@ -106,5 +111,13 @@ public class CartController extends BaseController {
 			cartRepo.save(new Cart(uid, new ArrayList<>()));
 			orderByProductRepo.deleteAllById(ordersToRemove);
 		}
+
+		Optional<NotificationToken> notificationToken = notificationRepo.findById(uid);
+
+		notificationToken.ifPresent(token -> expoNotificationsApi
+			.sendExpoNotification(
+				token.getExpoToken(),
+				"Compra realizada con exito!")
+		);
 	}
 }

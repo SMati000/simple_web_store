@@ -293,6 +293,137 @@ paths:
                   $ref: "#/components/schemas/ErrorResponse"
         "401":
           description: Unauthorized
+  /comments:
+    post:
+      tags:
+      - comment-controller
+      summary: Post a new comment
+      operationId: postComment
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        description: Will be authorized if has 'pc_customer_premium' role.
+        schema:
+          type: string
+          example: Bearer {jwt_access_token}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentReqDto'
+      responses:
+        '201':
+          description: Created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentRespDto'
+        '404':
+          description: Product not found
+        '500':
+          description: Internal error
+
+    get:
+      tags:
+      - comment-controller
+      summary: Get comments for a product
+      operationId: getComments
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        description: Not required when param approved=true. If approved=false, it'll be authorized only if user has 'pc_admin' role.
+        schema:
+          type: string
+          example: Bearer {jwt_access_token}
+      - name: productId
+        in: query
+        required: true
+        schema:
+          type: integer
+        description: Product ID
+      - name: approved
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: true
+        description: Filters by approved state.
+      responses:
+        '200':
+          description: List of comments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommentRespDto'
+        '403':
+          description: Only admins can see not approved comments
+
+  /comments/{cid}:
+    patch:
+      tags:
+      - comment-controller
+      summary: Approves (or deletes) a comment
+      operationId: patchComment
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        description: Will be authorized if user has 'pc_admin' role.
+        schema:
+          type: string
+          example: Bearer {jwt_access_token}
+      - name: cid
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Comment ID
+      - name: approve
+        in: query
+        required: true
+        schema:
+          type: boolean
+        description: true = approve, false = delete
+      responses:
+        '204':
+          description: Comment approved or deleted successfully
+        '404':
+          description: Comment not found
+        '403':
+          description: User is not authorized
+  /notifications:
+    post:
+      tags:
+      - notification-controller
+      summary: Registers a push notification token for the authenticated user
+      description: Stores an Expo push notification token associated with the authenticated user's email.
+      operationId: postNotificationToken
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        description: Will be authorized if user has any role.
+        schema:
+          type: string
+          example: Bearer {jwt_access_token}
+      - name: token
+        in: query
+        required: true
+        description: Expo push notification token in format base64
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Notification token successfully registered.
+        '403':
+          description: Forbidden.
+        '500':
+          description: Internal server error.
   /ping:
     get:
       tags:
@@ -411,3 +542,50 @@ components:
         amount:
           type: integer
           format: int32
+    CommentReqDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: ID autogenerado del comentario
+          example: 12
+        text:
+          type: string
+          description: Contenido del comentario
+          example: "Excelente calidad!"
+    CommentRespDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: ID autogenerado del comentario
+          example: 12
+        user:
+          type: string
+          description: Email o identificador del usuario que comenta
+          example: "usuario@example.com"
+        productId:
+          type: integer
+          format: int32
+          description: ID del producto asociado
+          example: 20
+        approved:
+          type: boolean
+          description: Indica si el comentario está aprobado
+          example: true
+        text:
+          type: string
+          description: Contenido del comentario
+          example: "Excelente calidad!"
+    NotificationToken:
+      type: object
+      properties:
+        user:
+          type: string
+          description: Email o identificador del usuario
+          example: "usuario@example.com"
+        text:
+          type: string
+          description: Token de Expo en base 64

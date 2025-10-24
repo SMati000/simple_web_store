@@ -30,7 +30,12 @@ public enum ErrorCodes {
 	/*
 	 * 3x: Cart
 	 */
-	CART_NOT_FOUND("30", HttpStatus.NOT_FOUND, "Carrito  no encontrado");
+	CART_NOT_FOUND("30", HttpStatus.NOT_FOUND, "Carrito  no encontrado"),
+
+	/*
+	* 4x: Comments
+	*/
+	COMMENT_NOT_FOUND("40", HttpStatus.NOT_FOUND, "Comentario no encontrado");
 
 	private final String errorCode;
 	private final HttpStatus statusCode;

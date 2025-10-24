@@ -23,3 +23,17 @@ VALUES
 (19, 0, 'Torta selva negra con cerezas y crema', '/productos/selva.jpg', 5, 'Torta Selva Negra', 650.00, 5, 3),
 (20, 3, 'Cupcakes decorados para fiestas', '/productos/cupcake.jpg', 1, 'Cupcakes Decorados', 200.00, 4, 6),
 (21, 2, 'Torta con Chocolinas y dulce de leche que no necesita horno!', '/productos/chocotorta.jpg', 1, 'Chocotorta', 750.00, 0, 5);
+
+INSERT INTO `comment` (id, user, product_id, approved, text) VALUES
+(1, 'ana@example.com', 1, 1, 'Muy buen brownie.'),
+(2, 'juan@example.com', 1, 1, 'Podría ser más barato, pero está bien.'),
+(3, 'maria@example.com', 3, 1, 'Buena torta!'),
+(4, 'jose@example.com', 4, 1, 'El envío tardó un poco.'),
+(5, 'ramiro@example.com', 4, 1, 'Muy ricos'),
+(6, 'laura@example.com', 6, 1, 'Tuvo un problema el envío, pero me prepararon otro.'),
+(7, 'paula@example.com', 7, 1, 'Me sorprendió para bien.'),
+(8, 'luis@example.com', 10, 1, 'Excelente relación precio/calidad.'),
+(9, 'lucia@example.com', 10, 1, 'Lo recomendaría sin problema.'),
+(10, 'vale@example.com', 10, 1, 'Buena compra, muy rico.'),
+(11, 'andrea@example.com', 19, 1, 'Satisfecha.'),
+(12, 'german@example.com', 20, 1, 'Nada que criticar, perfecto.');

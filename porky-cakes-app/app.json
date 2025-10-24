@@ -1,0 +1,62 @@
+{
+  "expo": {
+    "name": "porky-cakes-app",
+    "slug": "porky-cakes-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "porky-cakes-app",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "softwareKeyboardLayoutMode": "pan"
+    },
+    "web": {
+      "output": "static",
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff",
+          "dark": {
+            "backgroundColor": "#000000"
+          }
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends.",
+          "cameraPermission": "The app accesses your camera to let you take photos."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "***"
+      },
+      "LOG_LEVEL": "debug",
+      "REACT_APP_API_URL": "http://192.168.1.34:8083",
+      "REACT_APP_KEYCLOAK_ISSUER": "http://192.168.1.34:8080/realms/porky_cakes_realm",
+      "REACT_APP_KEYCLOAK_CLIENT_ID": "porky_cakes_client",
+      "REACT_APP_KEYCLOAK_REDIRECT_VIEW": "(tabs)"
+    }
+  }
+}
